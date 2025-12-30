@@ -1,0 +1,70 @@
+[manifest]
+version = "1.0.0"
+priority = 0
+
+[[patches]]
+[patches.pattern]
+target = "game.lua"
+pattern = "self.LANGUAGES = {"
+position = "before"
+payload = "local lang_font = self.SETTINGS.MOBILE.readable_font and 8 or 1"
+match_indent = true
+times = 1
+
+[[patches]]
+[patches.regex]
+target = "game.lua"
+pattern = "font = 1,"
+position = "at"
+payload = "font = lang_font,"
+
+[[patches]]
+[patches.pattern]
+target = "functions/button_callbacks.lua"
+pattern = "G.FUNCS.retry_connection = function(e)"
+position = "before"
+payload = '''
+	G.FUNCS.refresh_font = function()
+		G.LANGUAGES = nil
+		G:set_language()
+		G.E_MANAGER:clear_queue()
+		G.FUNCS.wipe_on()
+		G.E_MANAGER:add_event(Event({
+			no_delete = true,
+			blockable = true,
+			blocking = false,
+			func = function()
+				G:delete_run()
+				G:init_item_prototypes()
+				G:main_menu()
+				return true
+			end
+		}))
+		G.FUNCS.wipe_off()
+	end
+'''
+match_indent=true
+times = 1
+
+[[patches]]
+[patches.pattern]
+target = "main.lua"
+pattern = "G.CANVAS = love.graphics.newCanvas(w*G.CANV_SCALE, h*G.CANV_SCALE, {type = '2d', readable = true})"
+position = "before"
+payload = '''
+	local render_w, render_h = love.window.getDesktopDimensions(G.SETTINGS.WINDOW.selcted_display)
+	local unscaled_dims = love.window.getFullscreenModes(G.SETTINGS.WINDOW.selcted_display)[1]
+
+	local DPI_scale = math.floor((0.5*unscaled_dims.width/render_w + 0.5*unscaled_dims.height/render_h)*500 + 0.5)/500
+
+	if DPI_scale > 1.1 then
+		G.CANV_SCALE = 1.5
+
+		G.AA_CANVAS = love.graphics.newCanvas(G.WINDOWTRANS.real_window_w*G.CANV_SCALE, G.WINDOWTRANS.real_window_h*G.CANV_SCALE, {type = '2d', readable = true})
+		G.AA_CANVAS:setFilter('linear', 'linear')
+	else
+		G.AA_CANVAS = nil
+	end
+'''
+match_indent=true
+times = 1

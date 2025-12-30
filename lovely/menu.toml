@@ -1,0 +1,60 @@
+[manifest]
+version = "1.0.0"
+priority = 0
+
+[[patches]]
+[patches.pattern]
+target = "functions/UI_definitions.lua"
+pattern = "if G.F_VIDEO_SETTINGS then   tabs[#tabs+1] = {"
+position = "before"
+payload = '''
+  if G.F_MOBILE then
+    tabs[#tabs+1] = {
+      label = love.system.getOS(),
+      tab_definition_function = G.UIDEF.settings_tab,
+      tab_definition_function_args = 'Mobile'
+    }
+  end
+'''
+match_indent = true
+times = 1
+
+[[patches]]
+[patches.pattern]
+target = "functions/UI_definitions.lua"
+pattern = "G.F_RUMBLE and create_toggle({w = 1, label = localize(G.F_MOBILE and 'b_set_vibration' or 'b_set_rumble'), ref_table = G.SETTINGS, ref_value = 'rumble'}) or nil,"
+position = "at"
+payload = ""
+match_indent = true
+times = 1
+
+[[patches]]
+[patches.pattern]
+target = "functions/UI_definitions.lua"
+pattern = "elseif tab == 'Graphics' then"
+position = "before"
+payload = '''
+  elseif tab == 'Mobile' then
+    local vsync = select(3, love.window.getMode())['refreshrate']
+    local fps_options = {30, 45, 60}
+    if vsync > 60 then
+      table.insert(fps_options, 90)
+      if (vsync > 90) then table.insert(fps_options, vsync) end
+    end
+    local fps_option_index = 1
+    for i, option in ipairs(fps_options) do
+      if option == (G.SETTINGS.MOBILE.fps_cap or 60) then
+        fps_option_index = i
+        break
+      end
+    end
+    return {n=G.UIT.ROOT, config={align = "cm", padding = 0.05, colour = G.C.CLEAR}, nodes={
+      create_toggle({w = 1, label = localize(G.F_MOBILE and 'b_set_vibration' or 'b_set_rumble'), ref_table = G.SETTINGS, ref_value = 'rumble', callback = G.FUNCS.refresh_haptics}),
+      create_toggle({w = 1, label = "Readable font", ref_table = G.SETTINGS.MOBILE, ref_value = 'readable_font', callback = G.FUNCS.refresh_font}),
+      create_option_cycle({w = 4, scale = 0.8, label = "FPS cap", options = fps_options, opt_callback = 'change_fps_cap', current_option = fps_option_index}),
+      create_toggle({w = 1, label = "Skip tutorial", ref_table = G.SETTINGS.MOBILE, ref_value = 'skip_tutorial', callback = G.FUNCS.refresh_tutorial}),
+      create_toggle({w = 1, label = "Censored collab names", ref_table = G.SETTINGS.MOBILE, ref_value = 'babynames', callback = G.FUNCS.refresh_babynames}),
+    }}
+'''
+match_indent = true
+times = 1

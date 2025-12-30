@@ -1,0 +1,50 @@
+[manifest]
+version = "1.0.0"
+priority = 0
+
+[[patches]]
+[patches.pattern]
+target = "game.lua"
+pattern = "self.SETTINGS.paused = nil"
+position = "after"
+payload = "G.F_RUMBLE = G.SETTINGS.rumble"
+match_indent = true
+times = 1
+
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "elseif (love.system.getOS() == 'Android') then"
+position = "at"
+payload = '''
+	elseif G.MOBILE_VIBRATION_QUEUE > 0 then
+			if (love.system.getOS() == 'Android') then love.system.vibrate( G.MOBILE_VIBRATION_QUEUE == 1 and 0.001 or G.MOBILE_VIBRATION_QUEUE == 2 and 0.1 or G.MOBILE_VIBRATION_QUEUE == 3 and 0.25 )
+'''
+match_indent = true
+times = 1
+
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "elseif (love.system.getOS() == 'iOS') and G.MOBILE_VIBRATION_QUEUE > 0 then love.system.vibrate( 1, G.MOBILE_VIBRATION_QUEUE == 1 and 'light' or G.MOBILE_VIBRATION_QUEUE == 2 and 'medium' or G.MOBILE_VIBRATION_QUEUE == 3 and 'heavy' or 'rigid' ); G.MOBILE_VIBRATION_QUEUE = 0"
+position = "at"
+payload = '''
+			elseif (love.system.getOS() == 'iOS') then love.system.vibrate( 1, G.MOBILE_VIBRATION_QUEUE == 1 and 'light' or G.MOBILE_VIBRATION_QUEUE == 2 and 'medium' or G.MOBILE_VIBRATION_QUEUE == 3 and 'heavy' or 'rigid' )
+			end
+	G.MOBILE_VIBRATION_QUEUE = 0
+'''
+match_indent = true
+times = 1
+
+[[patches]]
+[patches.pattern]
+target = "functions/button_callbacks.lua"
+pattern = "G.FUNCS.retry_connection = function(e)"
+position = "before"
+payload = '''
+	G.FUNCS.refresh_haptics = function()
+		G.F_RUMBLE = G.SETTINGS.rumble
+	end
+'''
+match_indent=true
+times = 1

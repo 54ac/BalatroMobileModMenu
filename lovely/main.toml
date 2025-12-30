@@ -1,0 +1,37 @@
+[manifest]
+version = "1.0.0"
+priority = 0
+
+[[patches]]
+[patches.pattern]
+target = "globals.lua"
+pattern = "VERSION = VERSION..' [M]'"
+position = "after"
+payload = "VERSION = VERSION..'-mod'"
+match_indent = true
+times = 1
+
+[[patches]]
+[patches.pattern]
+target = "globals.lua"
+pattern = "rumble = self.F_RUMBLE,"
+position = "at"
+payload = "rumble = false,"
+match_indent = true
+times = 1
+
+[[patches]]
+[patches.pattern]
+target = "globals.lua"
+pattern = "GRAPHICS = {"
+position = "before"
+payload = '''
+	MOBILE = {
+			readable_font = false,
+			fps_cap = 60,
+			skip_tutorial = false,
+			babynames = true,
+	},
+'''
+match_indent = true
+times = 1

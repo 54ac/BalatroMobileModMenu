@@ -1,0 +1,27 @@
+[manifest]
+version = "1.0.0"
+priority = 0
+
+[[patches]]
+[patches.pattern]
+target = "main.lua"
+pattern = "G.FPS_CAP = G.FPS_CAP or (G.F_MOBILE and 60 or 200)"
+position = "at"
+payload = "G.FPS_CAP = G.SETTINGS.MOBILE.fps_cap or (G.F_MOBILE and 60 or select(3, love.window.getMode())['refreshrate'])"
+match_indent = true
+times = 1
+
+[[patches]]
+[patches.pattern]
+target = "functions/button_callbacks.lua"
+pattern = "G.FUNCS.change_collab = function(args)"
+position = "before"
+payload = '''
+	G.FUNCS.change_fps_cap = function(args)
+		G.SETTINGS.MOBILE.fps_cap = tonumber(args.to_val) or 60
+		G.FPS_CAP = tonumber(args.to_val) or 60
+		G:save_settings()
+	end
+'''
+match_indent = true
+times = 1

@@ -1,0 +1,25 @@
+[manifest]
+version = "1.0.0"
+priority = 0
+
+[[patches]]
+[patches.pattern]
+target = "game.lua"
+pattern = "self.SETTINGS.paused = nil"
+position = "after"
+payload = "G.F_BABYNAMES = G.SETTINGS.MOBILE.babynames"
+match_indent = true
+times = 1
+
+[[patches]]
+[patches.pattern]
+target = "functions/button_callbacks.lua"
+pattern = "G.FUNCS.retry_connection = function(e)"
+position = "before"
+payload = '''
+	G.FUNCS.refresh_babynames = function()
+		G.F_BABYNAMES = G.SETTINGS.MOBILE.babynames
+	end
+'''
+match_indent=true
+times = 1
