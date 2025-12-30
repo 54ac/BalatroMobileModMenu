@@ -15,6 +15,10 @@ This is a mod for the mobile version of Balatro which adds a tab in the settings
 - [Download this repository as a ZIP file](https://github.com/54ac/BalatroMobileModMenu/archive/refs/heads/main.zip).
 - Use the [Balatro APK Injector](https://github.com/54ac/BalatroAPKInjector) to add Lovely to your legally acquired copy of Balatro.
 - Go to the data folder of Balatro (e.g. `Android/data/com.playstack.balatro.android.mod`).
-- Extract the contents of this repository into the `files/mods` folder, so that the folder structure looks like this: `files/mods/BalatroMobileModMenu-main/lovely`.
+- Extract the ZIP file into the `files/mods` folder, so that the folder structure looks like this: `files/mods/BalatroMobileModMenu-main/lovely`.
 
 The additional tab should now appear in the settings menu.
+
+### Notes
+
+This mod might be compatible with the more popular method of modding Balatro by converting the Steam version to Android, but this has not been tested.
